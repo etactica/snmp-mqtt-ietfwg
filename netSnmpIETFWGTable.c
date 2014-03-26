@@ -8,62 +8,6 @@
 #include <net-snmp/agent/net-snmp-agent-includes.h>
 #include "netSnmpIETFWGTable.h"
 
-/** Initializes the netSnmpIETFWGTable module */
-netsnmp_tdata *
-init_netSnmpIETFWGTable(void) {
-	/*
-	 * here we initialize all the tables we're planning on supporting 
-	 */
-	return initialize_table_netSnmpIETFWGTable();
-}
-
-/** Initialize the netSnmpIETFWGTable table by defining its contents and how it's structured */
-netsnmp_tdata *
-initialize_table_netSnmpIETFWGTable(void) {
-	const oid netSnmpIETFWGTable_oid[] = {1, 3, 6, 1, 4, 1, 8072, 2, 2, 1};
-	const size_t netSnmpIETFWGTable_oid_len =
-		OID_LENGTH(netSnmpIETFWGTable_oid);
-	netsnmp_handler_registration *reg;
-	netsnmp_tdata *table_data;
-	netsnmp_table_registration_info *table_info;
-
-	DEBUGMSGTL(("netSnmpIETFWGTable:init",
-		"initializing table netSnmpIETFWGTable\n"));
-
-	reg =
-		netsnmp_create_handler_registration("netSnmpIETFWGTable",
-		netSnmpIETFWGTable_handler,
-		netSnmpIETFWGTable_oid,
-		netSnmpIETFWGTable_oid_len,
-		HANDLER_CAN_RWRITE);
-
-	table_data = netsnmp_tdata_create_table("netSnmpIETFWGTable", 0);
-	if (NULL == table_data) {
-		snmp_log(LOG_ERR,
-			"error creating tdata table for netSnmpIETFWGTable\n");
-		return NULL;
-	}
-	table_info = SNMP_MALLOC_TYPEDEF(netsnmp_table_registration_info);
-	if (NULL == table_info) {
-		snmp_log(LOG_ERR,
-			"error creating table info for netSnmpIETFWGTable\n");
-		return NULL;
-	}
-	netsnmp_table_helper_add_indexes(table_info, ASN_OCTET_STR, /* index: nsIETFWGName */
-		0);
-
-	table_info->min_column = COLUMN_NSIETFWGCHAIR1;
-	table_info->max_column = COLUMN_NSIETFWGCHAIR2;
-
-	netsnmp_tdata_register(reg, table_data, table_info);
-
-	/*
-	 * Initialise the contents of the table here 
-	 */
-
-	return table_data;
-}
-
 /*
  * Typical data structure for a row entry 
  */
@@ -88,15 +32,6 @@ struct netSnmpIETFWGTable_entry {
 
 	int valid;
 };
-
-void netSnmpIETFWGTable_simple_addupdate(netsnmp_tdata *table_data, const char *wgname,
-	const char *wgchair1, const char *wgchair2) {
-
-}
-
-void netSnmpIETFWGTable_simple_remove(netsnmp_tdata *table_data, const char *wgname) {
-
-}
 
 /*
  * create a new row in the table 
@@ -151,6 +86,108 @@ netSnmpIETFWGTable_removeEntry(netsnmp_tdata * table_data,
 	else
 		netsnmp_tdata_delete_row(row);
 }
+
+/** Initializes the netSnmpIETFWGTable module */
+netsnmp_tdata *
+init_netSnmpIETFWGTable(void) {
+	/*
+	 * here we initialize all the tables we're planning on supporting 
+	 */
+	return initialize_table_netSnmpIETFWGTable();
+}
+
+/** Initialize the netSnmpIETFWGTable table by defining its contents and how it's structured */
+netsnmp_tdata *
+initialize_table_netSnmpIETFWGTable(void) {
+	const oid netSnmpIETFWGTable_oid[] = {1, 3, 6, 1, 4, 1, 8072, 2, 2, 1};
+	const size_t netSnmpIETFWGTable_oid_len =
+		OID_LENGTH(netSnmpIETFWGTable_oid);
+	netsnmp_handler_registration *reg;
+	netsnmp_tdata *table_data;
+	netsnmp_table_registration_info *table_info;
+
+	DEBUGMSGTL(("netSnmpIETFWGTable:init",
+		"initializing table netSnmpIETFWGTable\n"));
+
+	reg =
+		netsnmp_create_handler_registration("netSnmpIETFWGTable",
+		netSnmpIETFWGTable_handler,
+		netSnmpIETFWGTable_oid,
+		netSnmpIETFWGTable_oid_len,
+		HANDLER_CAN_RWRITE);
+
+	table_data = netsnmp_tdata_create_table("netSnmpIETFWGTable", 0);
+	if (NULL == table_data) {
+		snmp_log(LOG_ERR,
+			"error creating tdata table for netSnmpIETFWGTable\n");
+		return NULL;
+	}
+	table_info = SNMP_MALLOC_TYPEDEF(netsnmp_table_registration_info);
+	if (NULL == table_info) {
+		snmp_log(LOG_ERR,
+			"error creating table info for netSnmpIETFWGTable\n");
+		return NULL;
+	}
+	netsnmp_table_helper_add_indexes(table_info, ASN_OCTET_STR, /* index: nsIETFWGName */
+		0);
+
+	table_info->min_column = COLUMN_NSIETFWGCHAIR1;
+	table_info->max_column = COLUMN_NSIETFWGCHAIR2;
+
+	netsnmp_tdata_register(reg, table_data, table_info);
+
+	/*
+	 * Initialise the contents of the table here 
+	 */
+
+	int i;
+
+	char *kwgs[] = {
+		"karls working group1",
+		"second wg",
+		"make it three",
+		NULL
+	};
+
+	char *knames1[] = {
+		"Albert Apple",
+		"Andy Awe",
+		"Alan Aardvark",
+		NULL
+	};
+	char *knames2[] = {
+		"Bill Braggy",
+		"Bobby Bush",
+		"Bruce Bullwhip",
+		NULL
+	};
+
+	char *wg;
+	i = 0;
+/*
+         netsnmp_table_row_add_index(row, ASN_OCTET_STR, wg, strlen(wg));
+        netsnmp_set_row_column(row, COLUMN_NSIETFWGCHAIR1, ASN_OCTET_STR, knames1[i], strlen(knames1[i]));
+        netsnmp_mark_row_column_writable(row, COLUMN_NSIETFWGCHAIR1, 1);
+        netsnmp_set_row_column(row, COLUMN_NSIETFWGCHAIR2, ASN_OCTET_STR, knames2[i], strlen(knames2[i]));
+        netsnmp_mark_row_column_writable(row, COLUMN_NSIETFWGCHAIR2, 1);
+        netsnmp_table_dataset_add_row(table_set, row);
+ */	
+	
+	netsnmp_tdata_row *row;
+	struct netSnmpIETFWGTable_entry *entry;
+	for (wg = kwgs[i]; (wg = kwgs[i]); i++) {
+		DEBUGMSGTL(("karl", "adding new row %d for wg: %s\n", i, wg));
+		row = netSnmpIETFWGTable_createEntry(table_data, wg, strlen(wg));
+		entry = row->data;
+		strcpy(entry->nsIETFWGChair1, knames1[i]);
+		entry->nsIETFWGChair1_len = strlen(knames1[i]);
+		strcpy(entry->nsIETFWGChair2, knames2[i]);
+		entry->nsIETFWGChair2_len = strlen(knames2[i]);
+	}
+
+	return table_data;
+}
+
 
 /** handles requests for the netSnmpIETFWGTable table */
 int
