@@ -16,6 +16,10 @@ implies table_data.  net-snmp provides _many_ ways of working with tables! [3]
 This is the way I found it easiest to understand and get started, but it is
 by no means the only way to do this!  (I'm a complete net-snmp novice!)
 
+## Dependencies
+netsnmp (obviously, tested with net-snmp 5.7.2)
+libmosquitto (Tested with mosquitto 1.2.3 and 1.3.1)
+json-c (Tested with 0.11)
 
 ## Examples:
 
