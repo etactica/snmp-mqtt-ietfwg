@@ -73,19 +73,19 @@ struct netSnmpIETFWGTable_entry {
     /*
      * Index values 
      */
-    char            nsIETFWGName[NNN];
+    char            nsIETFWGName[200];
     size_t          nsIETFWGName_len;
 
     /*
      * Column values 
      */
-    char            nsIETFWGChair1[NNN];
+    char            nsIETFWGChair1[200];
     size_t          nsIETFWGChair1_len;
-    char            old_nsIETFWGChair1[NNN];
+    char            old_nsIETFWGChair1[200];
     size_t          old_nsIETFWGChair1_len;
-    char            nsIETFWGChair2[NNN];
+    char            nsIETFWGChair2[200];
     size_t          nsIETFWGChair2_len;
-    char            old_nsIETFWGChair2[NNN];
+    char            old_nsIETFWGChair2[200];
     size_t          old_nsIETFWGChair2_len;
 
     int             valid;
