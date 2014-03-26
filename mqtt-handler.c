@@ -12,6 +12,7 @@
 #include <net-snmp/agent/net-snmp-agent-includes.h>
 
 #include "snmp-mqtt-ietfwg.h"
+#include "netSnmpIETFWGTable.h"
 
 void mosq_snmp_logger(struct mosquitto *mosq, void *obj, int level, const char *msg) {
 	DEBUGMSGTL(("mosquitto", "level: %d, msg: %s\n", level, msg));
@@ -25,12 +26,28 @@ void mosq_snmp_msg_handler(struct mosquitto *mosq, void *obj, const struct mosqu
 	 *   missing chairs in the json will be deleted
 	 * test/ietfwg/<wgname>/delete = delete (no body required)
 	 */
+	struct snmp_mqtt_ietfwg_state_ *st = obj;
+	char **topics;
+	int topic_count;
+	mosquitto_sub_topic_tokenise(msg->topic, &topics, &topic_count);
+	if (topic_count < 4) {
+		printf("not enough topic sections to care: %s is %d\n", msg->topic, topic_count);
+		return;
+	}
+
+	if (strcmp(topics[3], "delete") == 0) {
+		printf("attempting to delete for working group: %s\n", topics[2]);
+		netSnmpIETFWGTable_simple_remove(st->ietfwg_tdata, topics[2]);
+	} else if (strcmp(topics[3], "update")) {
+		printf("attempting to create_update for working group: %s\n", topics[2]);
+		// TODO - need to json parse payload here first...
+	}
 }
 
 void mosq_snmp_setup(struct snmp_mqtt_ietfwg_state_ *st) {
 	mosquitto_lib_init();
 	
-	st->mosq = mosquitto_new(NULL, true, NULL);
+	st->mosq = mosquitto_new(NULL, true, st);
 	mosquitto_log_callback_set(st->mosq, mosq_snmp_logger);
 	mosquitto_message_callback_set(st->mosq, mosq_snmp_msg_handler);
 	mosquitto_connect(st->mosq, "localhost", 1883, 60);

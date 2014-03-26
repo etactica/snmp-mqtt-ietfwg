@@ -164,15 +164,6 @@ initialize_table_netSnmpIETFWGTable(void) {
 
 	char *wg;
 	i = 0;
-/*
-         netsnmp_table_row_add_index(row, ASN_OCTET_STR, wg, strlen(wg));
-        netsnmp_set_row_column(row, COLUMN_NSIETFWGCHAIR1, ASN_OCTET_STR, knames1[i], strlen(knames1[i]));
-        netsnmp_mark_row_column_writable(row, COLUMN_NSIETFWGCHAIR1, 1);
-        netsnmp_set_row_column(row, COLUMN_NSIETFWGCHAIR2, ASN_OCTET_STR, knames2[i], strlen(knames2[i]));
-        netsnmp_mark_row_column_writable(row, COLUMN_NSIETFWGCHAIR2, 1);
-        netsnmp_table_dataset_add_row(table_set, row);
- */	
-	
 	netsnmp_tdata_row *row;
 	struct netSnmpIETFWGTable_entry *entry;
 	for (wg = kwgs[i]; (wg = kwgs[i]); i++) {
@@ -187,7 +178,6 @@ initialize_table_netSnmpIETFWGTable(void) {
 
 	return table_data;
 }
-
 
 /** handles requests for the netSnmpIETFWGTable table */
 int
@@ -455,4 +445,24 @@ netSnmpIETFWGTable_handler(netsnmp_mib_handler *handler,
 			break;
 	}
 	return SNMP_ERR_NOERROR;
+}
+
+void netSnmpIETFWGTable_simple_addupdate(netsnmp_tdata *table_data,
+	const char *wgname,
+	const char *wgchair1, const char *wgchair2) {
+
+}
+
+void netSnmpIETFWGTable_simple_remove(netsnmp_tdata *table_data, const char *wgname) {
+	netsnmp_variable_list wgname_var;
+	netsnmp_tdata_row *row;
+	memset(&wgname_var, 0, sizeof (netsnmp_variable_list));
+	snmp_set_var_typed_value(&wgname_var, ASN_OCTET_STR, wgname, strlen(wgname));
+	row = netsnmp_tdata_row_get_byidx(table_data, &wgname_var);
+	if (row) {
+		DEBUGMSGTL(("verbose", "Found row with wgname, deleting it: %s\n", wgname));
+		netsnmp_tdata_remove_and_delete_row(table_data, row);
+	} else {
+		DEBUGMSGTL(("verbose", "No row found with wgname: %s\n", wgname));
+	}
 }
