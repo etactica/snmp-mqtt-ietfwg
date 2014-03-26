@@ -9,18 +9,18 @@
 #include "netSnmpIETFWGTable.h"
 
 /** Initializes the netSnmpIETFWGTable module */
-void
+netsnmp_tdata *
 init_netSnmpIETFWGTable(void) {
 	/*
 	 * here we initialize all the tables we're planning on supporting 
 	 */
-	initialize_table_netSnmpIETFWGTable();
+	return initialize_table_netSnmpIETFWGTable();
 }
 
 /** Initialize the netSnmpIETFWGTable table by defining its contents and how it's structured */
-void
+netsnmp_tdata *
 initialize_table_netSnmpIETFWGTable(void) {
-	const oid netSnmpIETFWGTable_oid[] ={1, 3, 6, 1, 4, 1, 8072, 2, 2, 1};
+	const oid netSnmpIETFWGTable_oid[] = {1, 3, 6, 1, 4, 1, 8072, 2, 2, 1};
 	const size_t netSnmpIETFWGTable_oid_len =
 		OID_LENGTH(netSnmpIETFWGTable_oid);
 	netsnmp_handler_registration *reg;
@@ -41,13 +41,13 @@ initialize_table_netSnmpIETFWGTable(void) {
 	if (NULL == table_data) {
 		snmp_log(LOG_ERR,
 			"error creating tdata table for netSnmpIETFWGTable\n");
-		return;
+		return NULL;
 	}
 	table_info = SNMP_MALLOC_TYPEDEF(netsnmp_table_registration_info);
 	if (NULL == table_info) {
 		snmp_log(LOG_ERR,
 			"error creating table info for netSnmpIETFWGTable\n");
-		return;
+		return NULL;
 	}
 	netsnmp_table_helper_add_indexes(table_info, ASN_OCTET_STR, /* index: nsIETFWGName */
 		0);
@@ -60,6 +60,8 @@ initialize_table_netSnmpIETFWGTable(void) {
 	/*
 	 * Initialise the contents of the table here 
 	 */
+
+	return table_data;
 }
 
 /*
@@ -86,6 +88,15 @@ struct netSnmpIETFWGTable_entry {
 
 	int valid;
 };
+
+void netSnmpIETFWGTable_simple_addupdate(netsnmp_tdata *table_data, const char *wgname,
+	const char *wgchair1, const char *wgchair2) {
+
+}
+
+void netSnmpIETFWGTable_simple_remove(netsnmp_tdata *table_data, const char *wgname) {
+
+}
 
 /*
  * create a new row in the table 

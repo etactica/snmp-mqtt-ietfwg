@@ -173,7 +173,7 @@ main(int argc, char **argv) {
 	/*
 	 * init netSnmpIETFWGTable mib code 
 	 */
-	init_netSnmpIETFWGTable();
+	state.ietfwg_tdata = init_netSnmpIETFWGTable();
 
 	/*
 	 * read netSnmpIETFWGTable.conf files. 

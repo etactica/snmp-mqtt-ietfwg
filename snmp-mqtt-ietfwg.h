@@ -11,7 +11,7 @@
 
 struct snmp_mqtt_ietfwg_state_ {
 	struct mosquitto *mosq;
-	int stuff;	
+	netsnmp_tdata *ietfwg_tdata;
 };
 
 

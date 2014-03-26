@@ -19,6 +19,12 @@ void mosq_snmp_logger(struct mosquitto *mosq, void *obj, int level, const char *
 
 void mosq_snmp_msg_handler(struct mosquitto *mosq, void *obj, const struct mosquitto_message *msg) {
 	DEBUGMSGTL(("mosquitto", "Received message on topic: %s (%d bytes)\n", msg->topic, msg->payloadlen));
+	/*
+	 * test/ietfwg/<wgname>/update == create/update
+	 *   body is json: {chair1="blahblah", chair2="wopwop"}
+	 *   missing chairs in the json will be deleted
+	 * test/ietfwg/<wgname>/delete = delete (no body required)
+	 */
 }
 
 void mosq_snmp_setup(struct snmp_mqtt_ietfwg_state_ *st) {
