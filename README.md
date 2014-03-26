@@ -2,24 +2,25 @@
 
 An exploration of implementing a custom MIB as a sub agent of net-snmp
 
-This implements the NET-SNMP-EXAMPLES-MIB [1] IETF working group table example,
+This implements the [NET-SNMP-EXAMPLES-MIB](http://net-snmp.sourceforge.net/docs/mibs/NET-SNMP-EXAMPLES-MIB.txt)
+IETF working group table example,
 and allows the entries in that table to be updated via MQTT messages.
 
 The very basic steps of starting this project were
 
 1. mib2c -c mib2c.table_data.conf netSnmpIETFWGTable
-2. grab the subagent/agent code and makefile from mib2c.mfd.conf or the web [2]
+2. grab the subagent/agent code and makefile from mib2c.mfd.conf or the [web](http://www.net-snmp.org/docs/man/snmp_agent_api.html)
 3. Add in mqtt, json parsing and the table update code.
 
 This example project uses the "tdata" style, even though the mib2c config file
-implies table_data.  net-snmp provides _many_ ways of working with tables! [3]
+implies table_data.  [net-snmp provides _many_ ways of working with tables!](http://www.net-snmp.org/wiki/index.php/FAQ:Coding_07)
 This is the way I found it easiest to understand and get started, but it is
 by no means the only way to do this!  (I'm a complete net-snmp novice!)
 
 ## Dependencies
-netsnmp (obviously, tested with net-snmp 5.7.2)
-libmosquitto (Tested with mosquitto 1.2.3 and 1.3.1)
-json-c (Tested with 0.11)
+* netsnmp (obviously, tested with net-snmp 5.7.2)
+* libmosquitto (Tested with mosquitto 1.2.3 and 1.3.1)
+* json-c (Tested with 0.11)
 
 ## Examples:
 
@@ -69,7 +70,3 @@ table: NET-SNMP-EXAMPLES-MIB::netSnmpIETFWGTable
 ### Update an existing group
 This is the same as update, just using a working group name that already exists
 
-
-[1] http://net-snmp.sourceforge.net/docs/mibs/NET-SNMP-EXAMPLES-MIB.txt
-[2] http://www.net-snmp.org/docs/man/snmp_agent_api.html
-[3] http://www.net-snmp.org/wiki/index.php/FAQ:Coding_07
