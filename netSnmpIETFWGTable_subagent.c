@@ -17,6 +17,8 @@
 
 #include <signal.h>
 
+#include "mqtt-handler.h"
+
 /*
  * If compiling within the net-snmp source code, this will trigger the feature
  * detection mechansim to ensure the agent_check_and_process() function
@@ -64,6 +66,8 @@ main(int argc, char **argv) {
 	extern char *optarg;
 	int dont_fork = 0, use_syslog = 0;
 	char *agentx_socket = NULL;
+	
+	struct snmp_mqtt_ietfwg_state_ state;
 
 	while ((ch = getopt(argc, argv, "D:fHLMx:")) != EOF)
 		switch (ch) {
@@ -188,6 +192,9 @@ main(int argc, char **argv) {
 	keep_running = 1;
 	signal(SIGTERM, stop_server);
 	signal(SIGINT, stop_server);
+	
+	
+	mosq_snmp_setup(&state);
 
 	/*
 	 * you're main loop here... 
@@ -199,7 +206,8 @@ main(int argc, char **argv) {
 		/*
 		 * --- OR ---  
 		 */
-		agent_check_and_process(1); /* 0 == don't block */
+		mosquitto_loop(state.mosq, 50, 1);
+		agent_check_and_process(0); /* 0 == don't block */
 	}
 
 	/*

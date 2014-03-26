@@ -9,7 +9,7 @@ NETSNMPCONFIG=net-snmp-config
 NETSNMPCFLAGS := $(shell $(NETSNMPCONFIG) --base-cflags)
 NETSNMPLIBS := $(shell $(NETSNMPCONFIG) --agent-libs)
 
-LIBS=$(NETSNMPLIBS)
+LIBS=$(NETSNMPLIBS) -lmosquitto
 
 
 STRICT_FLAGS = -Wall -Wstrict-prototypes
@@ -17,6 +17,7 @@ CFLAGS=-I. $(NETSNMPCFLAGS) $(STRICT_FLAGS)
 
 SRCS = 	$(TABLE_PREFIX).c
 SRCS +=	$(TABLE_PREFIX)_subagent.c
+SRCS +=	mqtt-handler.c
 
 OBJS = $(SRCS:.c=.o)
 
