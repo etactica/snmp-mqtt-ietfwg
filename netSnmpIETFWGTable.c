@@ -447,21 +447,47 @@ netSnmpIETFWGTable_handler(netsnmp_mib_handler *handler,
 	return SNMP_ERR_NOERROR;
 }
 
-void netSnmpIETFWGTable_simple_addupdate(netsnmp_tdata *table_data,
-	const char *wgname,
-	const char *wgchair1, const char *wgchair2) {
-
-}
-
-void netSnmpIETFWGTable_simple_remove(netsnmp_tdata *table_data, const char *wgname) {
+static
+netsnmp_tdata_row *
+_find_row(netsnmp_tdata *table_data, const char *wgname) {
 	netsnmp_variable_list wgname_var;
 	netsnmp_tdata_row *row;
 	memset(&wgname_var, 0, sizeof (netsnmp_variable_list));
 	snmp_set_var_typed_value(&wgname_var, ASN_OCTET_STR, wgname, strlen(wgname));
-	row = netsnmp_tdata_row_get_byidx(table_data, &wgname_var);
+	return netsnmp_tdata_row_get_byidx(table_data, &wgname_var);
+}
+
+void netSnmpIETFWGTable_simple_addupdate(netsnmp_tdata *table_data,
+	const char *wgname,
+	const char *wgchair1, const char *wgchair2) {
+
+	netsnmp_tdata_row *row = _find_row(table_data, wgname);
+	if (!row) {
+		/* Create if it's new, */
+		row = netSnmpIETFWGTable_createEntry(table_data, wgname, strlen(wgname));
+	}
+	/* then just do the update */
+	struct netSnmpIETFWGTable_entry *entry = row->data;
+	if (wgchair1) {
+		strcpy(entry->nsIETFWGChair1, wgchair1);
+		entry->nsIETFWGChair1_len = strlen(wgchair1);
+	} else {
+		/* don't need to actually zero out the data...*/
+		entry->nsIETFWGChair1_len = 0;
+	}
+	if (wgchair2) {
+		strcpy(entry->nsIETFWGChair2, wgchair2);
+		entry->nsIETFWGChair2_len = strlen(wgchair2);
+	} else {
+		entry->nsIETFWGChair2_len = 0;
+	}
+}
+
+void netSnmpIETFWGTable_simple_remove(netsnmp_tdata *table_data, const char *wgname) {
+	netsnmp_tdata_row *row = _find_row(table_data, wgname);
 	if (row) {
 		DEBUGMSGTL(("verbose", "Found row with wgname, deleting it: %s\n", wgname));
-		netsnmp_tdata_remove_and_delete_row(table_data, row);
+		netSnmpIETFWGTable_removeEntry(table_data, row);
 	} else {
 		DEBUGMSGTL(("verbose", "No row found with wgname: %s\n", wgname));
 	}

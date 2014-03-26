@@ -10,6 +10,7 @@
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
 #include <net-snmp/agent/net-snmp-agent-includes.h>
+#include <json/json.h>
 
 #include "snmp-mqtt-ietfwg.h"
 #include "netSnmpIETFWGTable.h"
@@ -31,22 +32,39 @@ void mosq_snmp_msg_handler(struct mosquitto *mosq, void *obj, const struct mosqu
 	int topic_count;
 	mosquitto_sub_topic_tokenise(msg->topic, &topics, &topic_count);
 	if (topic_count < 4) {
-		printf("not enough topic sections to care: %s is %d\n", msg->topic, topic_count);
+		DEBUGMSGTL(("snmp-mqtt-ietfwg", "not enough topic sections to care: %s is %d\n", msg->topic, topic_count));
 		return;
 	}
 
 	if (strcmp(topics[3], "delete") == 0) {
-		printf("attempting to delete for working group: %s\n", topics[2]);
+		DEBUGMSGTL(("snmp-mqtt-ietfwg", "Attempting to delete working group: %s\n", topics[2]));
 		netSnmpIETFWGTable_simple_remove(st->ietfwg_tdata, topics[2]);
-	} else if (strcmp(topics[3], "update")) {
-		printf("attempting to create_update for working group: %s\n", topics[2]);
-		// TODO - need to json parse payload here first...
+	} else if (strcmp(topics[3], "update") == 0) {
+		struct json_object *json_message = json_tokener_parse(msg->payload);
+		if (is_error(json_message)) {
+			DEBUGMSGTL(("snmp-mqtt-ietfwg", "Update message wasn't json, ignoring\n"));
+			return;
+		}
+		json_object *jsstr;
+		char *chair1 = NULL;
+		char *chair2 = NULL;
+		if (json_object_object_get_ex(json_message, "chair1", &jsstr)) {
+			chair1 = json_object_get_string(jsstr);
+		}
+		if (json_object_object_get_ex(json_message, "chair2", &jsstr)) {
+			chair2 = json_object_get_string(jsstr);
+		}
+		DEBUGMSGTL(("snmp-mqtt-ietfwg", "Create/Update working group: %s with chair1: %s, chair2: %s\n",
+			topics[2], chair1 ? chair1 : "(null)", chair2 ? chair2 : "(null)"));
+		netSnmpIETFWGTable_simple_addupdate(st->ietfwg_tdata, topics[2], chair1, chair2);
+		/* Free the json objects _after_ the snmp layer has taken copies of them */
+		json_object_put(json_message);
 	}
 }
 
 void mosq_snmp_setup(struct snmp_mqtt_ietfwg_state_ *st) {
 	mosquitto_lib_init();
-	
+
 	st->mosq = mosquitto_new(NULL, true, st);
 	mosquitto_log_callback_set(st->mosq, mosq_snmp_logger);
 	mosquitto_message_callback_set(st->mosq, mosq_snmp_msg_handler);

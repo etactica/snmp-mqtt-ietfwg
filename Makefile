@@ -9,7 +9,7 @@ NETSNMPCONFIG=net-snmp-config
 NETSNMPCFLAGS := $(shell $(NETSNMPCONFIG) --base-cflags)
 NETSNMPLIBS := $(shell $(NETSNMPCONFIG) --agent-libs)
 
-LIBS=$(NETSNMPLIBS) -lmosquitto
+LIBS=$(NETSNMPLIBS) -lmosquitto -ljson-c
 
 
 STRICT_FLAGS = -Wall -Wstrict-prototypes

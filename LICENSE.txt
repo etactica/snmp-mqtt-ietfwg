@@ -1,0 +1,6 @@
+Consider this project to be licensed under your choice of:
+
+* BSD 2 clause http://opensource.org/licenses/BSD-2-Clause
+* MIT http://opensource.org/licenses/MIT
+* Apache2 http://opensource.org/licenses/Apache-2.0
+
