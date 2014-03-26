@@ -8,8 +8,8 @@
 /*
  * function declarations 
  */
-void            init_netSnmpIETFWGTable(void);
-void            initialize_table_netSnmpIETFWGTable(void);
+void init_netSnmpIETFWGTable(void);
+void initialize_table_netSnmpIETFWGTable(void);
 Netsnmp_Node_Handler netSnmpIETFWGTable_handler;
 
 /*
